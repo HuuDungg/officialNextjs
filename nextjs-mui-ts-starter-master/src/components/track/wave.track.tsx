@@ -1,23 +1,59 @@
-import { useEffect, useRef } from "react"
-import WaveSurfer from 'wavesurfer.js'
-const WaveTrack = () => {
-    const containerRef = useRef<HTMLDivElement>(null)
+'use client'
 
+import { useEffect, useRef, useState, useMemo } from "react";
+import WaveSurfer from "wavesurfer.js";
+import { useSearchParams } from 'next/navigation';
+
+// WaveSurfer hook
+const useWavesurfer = (containerRef: any, options: any) => {
+    const [wavesurfer, setWavesurfer] = useState<any>(null)
+
+    // or any of the props change
     useEffect(() => {
-        WaveSurfer.create({
-            container: containerRef.current!,
+        if (!containerRef.current) return
+
+        const ws = WaveSurfer.create({
+            ...options,
+            container: containerRef.current,
+        })
+
+        setWavesurfer(ws)
+
+        return () => {
+            ws.destroy()
+        }
+    }, [options, containerRef])
+
+    return wavesurfer
+}
+
+
+const WaveTrack = () => {
+    const searchParams = useSearchParams()
+    const fileName = searchParams.get('audio');
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const optionsMemo = useMemo(() => {
+        return {
             waveColor: 'rgb(200, 0, 200)',
             progressColor: 'rgb(100, 0, 100)',
-            url: '/audio/lynd.mp3',
-        })
-    }, [])
-    return (
-        <>
-            <div ref={containerRef}>
+            url: `/api?nameTrack=${fileName}`,
+        }
+    }, []);
 
-            </div>
-        </>
+    const options = {
+        waveColor: 'rgb(200, 0, 200)',
+        progressColor: 'rgb(100, 0, 100)',
+        url: `/api?nameTrack=${fileName}`,
+    }
+
+    const wavesurfer = useWavesurfer(containerRef, optionsMemo);
+
+    return (
+        <div ref={containerRef}>
+            wave track
+        </div>
     )
 }
 
-export default WaveTrack
+export default WaveTrack;
