@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState, useMemo } from "react";
-import WaveSurfer from "wavesurfer.js";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import WaveSurfer, { WaveSurferOptions } from "wavesurfer.js";
 import { useSearchParams } from 'next/navigation';
 
 // WaveSurfer hook
-const useWavesurfer = (containerRef: any, options: any) => {
+const useWavesurfer = (containerRef: React.RefObject<HTMLDivElement>, options: Omit<WaveSurferOptions, "container">) => {
     const [wavesurfer, setWavesurfer] = useState<any>(null)
 
     // or any of the props change
