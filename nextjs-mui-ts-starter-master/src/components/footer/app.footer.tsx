@@ -1,5 +1,5 @@
 'use client'
-import useHasMounted from '@/utils/customHook';
+import { useHasMounted } from '@/utils/customHook';
 import { Container } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import AudioPlayer from 'react-h5-audio-player';
