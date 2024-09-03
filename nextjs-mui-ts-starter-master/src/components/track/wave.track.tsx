@@ -4,7 +4,9 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from "react"
 import { useSearchParams } from 'next/navigation';
 import { useWavesurfer } from "@/utils/customHook";
 import './style.scss'
-
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import { Tooltip } from "@mui/material";
 const WaveTrack = () => {
 
 
@@ -18,6 +20,35 @@ const WaveTrack = () => {
 
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
+    const arrComments = [
+        {
+            id: 1,
+            avatar: "http://localhost:8000/images/chill1.png",
+            moment: 10,
+            user: "username 1",
+            content: "just a comment1"
+        },
+        {
+            id: 2,
+            avatar: "http://localhost:8000/images/chill1.png",
+            moment: 30,
+            user: "username 2",
+            content: "just a comment3"
+        },
+        {
+            id: 3,
+            avatar: "http://localhost:8000/images/chill1.png",
+            moment: 50,
+            user: "username 3",
+            content: "just a comment3"
+        },
+    ]
+
+    const calLeft = (moment: number) => {
+        const hardCodeDuration = 199;
+        const percent = (moment / hardCodeDuration) * 100;
+        return `${percent}%`
+    }
 
 
     const optionsMemo = useMemo(() => {
@@ -79,6 +110,11 @@ const WaveTrack = () => {
         wavesurfer?.on('timeupdate', (currentTime) => {
             setTimeRef(formatTime(currentTime))
         })
+
+        wavesurfer?.on('click', () => {
+            wavesurfer.play()
+            setIsPlaying(true)
+        })
     }
     {
         const hover = hoverRef.current!;
@@ -87,23 +123,95 @@ const WaveTrack = () => {
     }
 
     return (
-        <>
-            <div ref={containerRef} className="waveFormContainer">
-                <div id="time">{timeRef}</div>
-                <div id="duration">{duarationRef}</div>
-                <div ref={hoverRef} id="hover"></div>
-                <div className="overlay"
-                    style={{
-                        position: "absolute",
-                        height: "30px",
-                        width: "100%",
-                        bottom: "0",
-                        background: "#ccc"
-                    }}
-                ></div>
+        <div style={{ marginTop: 20 }}>
+            <div style={{
+                display: "flex", gap: 15, padding: 20, height: 400,
+                background: "linear-gradient(135deg, rgb(106, 112, 67) 0%, rgb(11, 15, 20) 100%)"
+            }}>
+                <div className="left" style={{
+                    width: "75%", height: "calc(100% - 10px)", display: "flex",
+                    flexDirection: "column", justifyContent: "space-between"
+                }}>
+                    <div className="info" style={{ display: "flex" }}>
+                        <div>
+                            <div onClick={() => onPlayClick()}
+                                style={{
+                                    borderRadius: "50%",
+                                    background: "#f50",
+                                    height: "50px",
+                                    width: "50px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                {isPlaying === true ?
+                                    <PauseIcon sx={{ fontSize: 30, color: "white" }} />
+                                    :
+                                    <PlayArrowIcon sx={{ fontSize: 30, color: "white" }} />
+                                }
+                            </div>
+                        </div>
+                        <div style={{ marginLeft: 20 }}>
+                            <div style={{
+                                padding: "0 5px", background: "#333", fontSize: 30, width: "fit-content",
+                                color: "white"
+                            }}>
+                                Hỏi Dân IT's song
+                            </div>
+                            <div style={{
+                                padding: "0 5px", marginTop: 10, background: "#333", fontSize: 20,
+                                width: "fit-content", color: "white"
+                            }}>
+                                Eric
+                            </div>
+                        </div>
+                    </div>
+                    <div ref={containerRef} className="waveFormContainer">
+                        <div id="time">{timeRef}</div>
+                        <div id="duration">{duarationRef}</div>
+                        <div ref={hoverRef} id="hover"></div>
+                        <div className="overlay" style={{
+                            position: "absolute", height: "30px", width: "100%", bottom: "0",
+                            backgroundColor: "#ccc",
+                        }}>
+                            <div className="comments" style={{
+                                position: "relative",
+                                top: 2,
+                                zIndex: 20
+                            }}>
+                                {
+                                    arrComments.map(cmt => {
+                                        return (
+                                            <Tooltip title={cmt.content} arrow>
+                                                <img
+                                                    onPointerMove={(e) => {
+                                                        const hover = hoverRef.current!;
+                                                        hover.style.width = calLeft(cmt.moment + 3)
+                                                    }}
+                                                    key={cmt.id} style={{
+                                                        width: 20,
+                                                        height: 20,
+                                                        position: 'absolute',
+                                                        left: calLeft(cmt.moment),
+                                                    }} src={cmt.avatar} alt="img of comments" />
+                                            </Tooltip>
+
+
+                                        )
+                                    })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="right" style={{ width: "25%", padding: 15, display: "flex", alignItems: "center" }}>
+                    <div style={{ background: "#ccc", width: 250, height: 250 }}>
+                    </div>
+                </div>
             </div>
-            <button onClick={() => onPlayClick()}>{isPlaying ? "Pause" : "Play"}</button>
-        </>
+        </div >
     )
 }
 

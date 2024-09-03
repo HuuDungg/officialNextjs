@@ -13,11 +13,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { Avatar, Container } from '@mui/material';
+import { Avatar, Button, Container } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-
+import { useSession } from 'next-auth/react';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -78,6 +77,11 @@ const AppHeader = () => {
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const route = useRouter()
+    const { data: session } = useSession()
+
+    console.log("check session: ", session)
+    console.log("check hook: ", useSession())
+
 
     const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -229,28 +233,40 @@ const AppHeader = () => {
                             />
                         </Search>
                         <Box sx={{ flexGrow: 1 }} />
-                        <Box sx={{
-                            display: { xs: 'none', md: 'flex', gap: '20px', cursor: 'pointer', alignItems: 'center' },
-                            "> a": {
-                                color: 'unset',
-                                textDecoration: 'unset'
-                            }
-                        }}>
-                            <Link href={'/playlist'}>Playlists</Link>
-                            <Link href={'/like'}>Likes</Link>
-                            <Link href={'/uploads'}>Uploads</Link>
-                            <IconButton
-                                size="large"
-                                edge="end"
-                                aria-label="account of current user"
-                                aria-controls={menuId}
-                                aria-haspopup="true"
-                                onClick={handleProfileMenuOpen}
-                                color="inherit"
-                            >
-                                <Avatar sx={{ backgroundColor: 'orange' }}>OP</Avatar>
-                            </IconButton>
-                        </Box>
+                        {
+                            session ?
+                                <>
+                                    <Box sx={{
+                                        display: { xs: 'none', md: 'flex', gap: '20px', cursor: 'pointer', alignItems: 'center' },
+                                        "> a": {
+                                            color: 'unset',
+                                            textDecoration: 'unset'
+                                        }
+                                    }}>
+                                        <Link href={'/playlist'}>Playlists</Link>
+                                        <Link href={'/like'}>Likes</Link>
+                                        <Link href={'/uploads'}>Uploads</Link>
+                                        <IconButton
+                                            size="large"
+                                            edge="end"
+                                            aria-label="account of current user"
+                                            aria-controls={menuId}
+                                            aria-haspopup="true"
+                                            onClick={handleProfileMenuOpen}
+                                            color="inherit"
+                                        >
+                                            <Avatar sx={{ backgroundColor: 'orange' }}>OP</Avatar>
+                                        </IconButton>
+                                    </Box>
+                                </>
+                                :
+                                <>
+                                    <Button href='http://localhost:3000/api/auth/signin'>
+                                        Login
+                                    </Button>
+                                </>
+                        }
+
                         <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                             <IconButton
                                 size="large"
