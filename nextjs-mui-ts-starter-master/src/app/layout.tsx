@@ -9,9 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeRegistry>
           <NextAuthWrapper>
-            <AppHeader />
             {children}
-            <AppFooter />
           </NextAuthWrapper>
         </ThemeRegistry>
       </body>

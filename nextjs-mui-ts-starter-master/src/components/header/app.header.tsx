@@ -53,7 +53,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('md')]: {
-            width: '60ch',
+            width: '40ch',
         }
 
     },
@@ -257,15 +257,15 @@ const AppHeader = () => {
                             {
                                 session ?
                                     <>
-                                        <Button sx={{ color: 'unset' }} onClick={() => { signOut() }}>
+                                        <Link href={'/'} onClick={() => { signOut() }}>
                                             Logout
-                                        </Button>
+                                        </Link>
                                     </>
                                     :
                                     <>
-                                        <Button sx={{ color: 'unset' }} onClick={() => { signIn() }}>
+                                        <Link href='/auth/signin'>
                                             Login
-                                        </Button>
+                                        </Link>
                                     </>
                             }
                         </Box>
