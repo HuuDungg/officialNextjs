@@ -79,8 +79,8 @@ const AppHeader = () => {
     const route = useRouter()
     const { data: session } = useSession()
 
-    console.log("check session: ", session)
-    console.log("check hook: ", useSession())
+    // console.log("check session: ", session)
+    // console.log("check hook: ", useSession())
 
 
     const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -242,7 +242,7 @@ const AppHeader = () => {
                         }}>
                             <Link href={'/playlist'}>Playlists</Link>
                             <Link href={'/like'}>Likes</Link>
-                            <Link href={'/uploads'}>Uploads</Link>
+                            <Link href={'/track/upload'}>Uploads</Link>
                             <IconButton
                                 size="large"
                                 edge="end"
