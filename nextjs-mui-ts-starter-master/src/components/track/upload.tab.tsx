@@ -35,7 +35,9 @@ function a11yProps(index: number) {
 
 export function BasicTabs() {
     const [value, setValue] = React.useState(0);
-
+    const [percent, setPercent] = React.useState(0)
+    const [fileName, setFileName] = React.useState('')
+    const [fileUrl, setFileUrl] = React.useState('')
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
@@ -44,15 +46,15 @@ export function BasicTabs() {
         <Box sx={{ width: '100%', border: 'solid gray 1px', marginTop: 5 }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                    <Tab label="Tracks" {...a11yProps(0)} />
-                    <Tab label="Basic information " {...a11yProps(1)} />
+                    <Tab label="Tracks" {...a11yProps(0)} disabled={value !== 0} />
+                    <Tab label="Basic information " {...a11yProps(1)} disabled={value !== 1} />
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-                <Step1 />
+                <Step1 setPercent={setPercent} setValue={setValue} setFileName={setFileName} setFileUrl={setFileUrl} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-                <Step2 />
+                <Step2 percent={percent} fileName={fileName} fileUrl={fileUrl} />
             </CustomTabPanel>
         </Box>
     );

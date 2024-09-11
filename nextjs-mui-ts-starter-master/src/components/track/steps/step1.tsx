@@ -5,7 +5,7 @@ import { Button as BaseButton } from '@mui/base/Button';
 import { styled } from '@mui/system';
 import Stack from '@mui/material/Stack';
 import { CloudUpload } from '@mui/icons-material';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { sendRequest, sendRequestFile } from '@/utils/api';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
@@ -20,7 +20,6 @@ export function UnstyledButtonsSimple() {
                 }} />
                 Upload
             </Button>
-
         </Stack>
     );
 }
@@ -88,42 +87,51 @@ const Button = styled(BaseButton)(
   }
 `,
 );
-const Step1 = () => {
+
+interface IProps {
+    setPercent: Function,
+    setValue: Function,
+    setFileName: Function,
+    setFileUrl: Function
+}
+
+const Step1 = (props: IProps) => {
     const { data: session } = useSession();
     const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
-
+        props.setValue(1)
         if (acceptedFiles && acceptedFiles[0]) {
             const audio = acceptedFiles[0]
             const form = new FormData();
-            console.log("check audio file: ", audio)
-            console.log("check session file: ", session?.access_token)
 
+            props.setFileUrl(audio.path)
             form.append("fileUpload", audio);
-            // const chills = await sendRequestFile<IBackendRes<ITrackTop>>({
-            //     url: 'http://localhost:8000/api/v1/files/upload',
-            //     method: 'POST',
-            //     body:
-            //         form
-            //     ,
-            //     headers: {
-            //         'Authorization': 'Bearer ' + session?.access_token,
-            //         'target_type': 'tracks',
-            //     }
-            // })
-
             let config = {
                 headers: {
                     'Authorization': 'Bearer ' + session?.access_token,
                     'target_type': 'tracks',
                 }
+
             }
 
             try {
                 const res = await axios.post('http://localhost:8000/api/v1/files/upload',
                     form,
-                    config
+                    {
+                        headers: {
+                            'Authorization': 'Bearer ' + session?.access_token,
+                            'target_type': 'tracks',
+                            delay: 2000
+                        },
+                        onUploadProgress: progressEvent => {
+                            let percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total!);
+                            console.log("check persent: ", percentCompleted)
+                            props.setPercent(percentCompleted)
+                        }
+                    }
                 )
-                console.log('checl res: ', res.data.message)
+                console.log("check file: ", res.data.data.fileName)
+
+                props.setFileName(res.data.data.fileName)
             } catch (error) {
                 console.log('checl res: ', error)
             }
@@ -141,6 +149,7 @@ const Step1 = () => {
                 '.flac',
                 '.wma'],
         }
+
     })
 
     const files = acceptedFiles.map((file: FileWithPath) => (
