@@ -7,9 +7,10 @@ import './style.scss'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import { Tooltip } from "@mui/material";
+import { useTrackContext } from "./track.wrapper";
 const WaveTrack = () => {
 
-
+    const { currentTrack, setCurrentTrack } = useTrackContext() as ITrackContext
     const searchParams = useSearchParams()
     const fileName = searchParams.get('audio');
     const containerRef = useRef<HTMLDivElement>(null);
@@ -86,9 +87,32 @@ const WaveTrack = () => {
 
     const wavesurfer = useWavesurfer(containerRef, optionsMemo);
 
+    useEffect(() => {
+        if (currentTrack.isPlaying) {
+            wavesurfer?.play()
+            setIsPlaying(true)
+        } else {
+            wavesurfer?.pause()
+            setIsPlaying(false)
+        }
+    }, [currentTrack.isPlaying])
     const onPlayClick = useCallback(() => {
         if (wavesurfer) {
-            wavesurfer?.isPlaying() ? wavesurfer.pause() : wavesurfer?.play()
+            if (wavesurfer?.isPlaying()) {
+                wavesurfer.pause()
+                setIsPlaying(true)
+                setCurrentTrack({
+                    ...currentTrack,
+                    isPlaying: false
+                })
+            } else {
+                wavesurfer.play()
+                setIsPlaying(true)
+                setCurrentTrack({
+                    ...currentTrack,
+                    isPlaying: true
+                })
+            }
         }
         setIsPlaying(wavesurfer?.isPlaying() ?? false)
     }, [wavesurfer])
@@ -208,6 +232,9 @@ const WaveTrack = () => {
                 </div>
                 <div className="right" style={{ width: "25%", padding: 15, display: "flex", alignItems: "center" }}>
                     <div style={{ background: "#ccc", width: 250, height: 250 }}>
+                        <img src={process.env.NEXT_PUBLIC_BACKEND_URL_IMAGES + currentTrack.imgUrl} alt="" style={{
+                            width: 250, height: 250, overflow: 'hidden'
+                        }} />
                     </div>
                 </div>
             </div>

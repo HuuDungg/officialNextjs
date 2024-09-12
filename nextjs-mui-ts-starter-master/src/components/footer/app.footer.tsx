@@ -2,25 +2,68 @@
 import { useHasMounted } from '@/utils/customHook';
 import { Container } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
+import { useContext, useEffect, useRef } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
+import { TrackContext, useTrackContext } from '../track/track.wrapper';
 
 const AppFooter = () => {
     const hasMounted = useHasMounted();
-
+    const playRef = useRef(null)
+    const { currentTrack, setCurrentTrack } = useTrackContext() as ITrackContext
     if (!hasMounted) return (<></>)//fragment
 
+    const handlePlay = () => {
+        setCurrentTrack({
+            ...currentTrack,
+            isPlaying: true
+        })
+    }
+
+    const handlePause = () => {
+        setCurrentTrack({
+            ...currentTrack,
+            isPlaying: false
+        })
+    }
+
+    //@ts-ignore
+    if (playRef?.current?.audio?.current) {
+        if (currentTrack.isPlaying) {
+            //@ts-ignore
+            playRef?.current?.audio?.current.play()
+        } else {
+            //@ts-ignore
+            playRef?.current?.audio?.current.pause()
+        }
+    }
+
+
+
+
     return (
-        <div>
+        <div style={{
+            marginTop: 70
+        }}>
             <AppBar position="fixed"
                 sx={{
                     top: 'auto', bottom: 0,
-                    background: "#f2f2f2"
+                    background: "#f2f2f2",
                 }}
             >
-                <Container sx={{ display: "flex", gap: 10 }}>
+                <Container sx={{
+                    display: "flex",
+                    gap: 10,
+                    '.rhap_main': {
+                        gap: 5
+                    }
+                }}>
                     <AudioPlayer
-                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/tracks/hoidanit.mp3`}
+                        ref={playRef}
+                        onPlay={() => handlePlay()}
+                        onPause={() => handlePause()}
+                        layout='horizontal-reverse'
+                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/tracks/${currentTrack?.trackUrl}`}
                         volume={0.5}
                         style={{
                             boxShadow: "unset",
@@ -34,8 +77,8 @@ const AppFooter = () => {
                         justifyContent: "center",
                         minWidth: 100
                     }}>
-                        <div style={{ color: "#ccc" }}>HuuDung</div>
-                        <div style={{ color: "black" }}>Who am I ?</div>
+                        <div style={{ color: "#ccc" }}>{currentTrack?.uploader.name}</div>
+                        <div style={{ color: "black" }}>{currentTrack?.title}</div>
                     </div>
                 </Container>
             </AppBar>

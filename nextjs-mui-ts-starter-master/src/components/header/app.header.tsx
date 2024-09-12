@@ -13,10 +13,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { Avatar, Button, Container } from '@mui/material';
+import { Avatar, Container } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -118,7 +118,7 @@ const AppHeader = () => {
             <MenuItem
                 onClick={handleMenuClose}
             >
-                <Link href={'profile'} style={{
+                <Link href={`/profile/${session?.user._id}`} style={{
                     textDecoration: 'unset',
                     color: 'unset'
                 }}>Profile</Link>
