@@ -54,7 +54,7 @@ export function BasicTabs() {
                 <Step1 setPercent={setPercent} setValue={setValue} setFileName={setFileName} setFileUrl={setFileUrl} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-                <Step2 percent={percent} fileName={fileName} fileUrl={fileUrl} />
+                <Step2 percent={percent} fileName={fileName} fileUrl={fileUrl} setValue={setValue} />
             </CustomTabPanel>
         </Box>
     );

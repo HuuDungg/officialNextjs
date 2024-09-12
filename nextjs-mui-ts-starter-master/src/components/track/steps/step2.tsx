@@ -8,6 +8,7 @@ import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
+import { useToast } from '@/utils/toast';
 
 
 function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
@@ -60,7 +61,8 @@ export function LinearWithValueLabel() {
 interface IProps {
     percent: number,
     fileName: string,
-    fileUrl: string
+    fileUrl: string,
+    setValue: Function
 }
 
 interface iNewTrack {
@@ -72,8 +74,6 @@ interface iNewTrack {
 }
 const Step2 = (props: IProps) => {
     const [imageUrl, setImageUrl] = useState('')
-    const [isAlert, setIsAlert] = useState<boolean>(true)
-
     const category = [
         {
             value: 'CHILL',
@@ -95,6 +95,8 @@ const Step2 = (props: IProps) => {
         imgUrl: '',
         category: '',
     })
+
+    const toast = useToast();
 
     const { data: session } = useSession();
 
@@ -141,10 +143,10 @@ const Step2 = (props: IProps) => {
                 },
                 config
             )
-
-
+            toast.success('Upload complete');
+            props.setValue(0)
         } catch (error) {
-            console.log('checl res upload final: ', error)
+            toast.error('something went wrong');
         }
     }
 
@@ -156,11 +158,6 @@ const Step2 = (props: IProps) => {
     }, [props.fileName])
     return (
         <>
-            {/* {isAlert &&
-                <Alert variant="outlined" severity="success">
-                    This is an outlined success Alert.
-                </Alert>
-            } */}
             <Typography variant="h5" gutterBottom>
                 {props.fileName}
             </Typography>
