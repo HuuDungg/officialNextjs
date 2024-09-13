@@ -1,13 +1,15 @@
 'use client'
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useWavesurfer } from "@/utils/customHook";
 import './style.scss'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
-import { Tooltip } from "@mui/material";
+import { Grid, TextField, Tooltip } from "@mui/material";
 import { useTrackContext } from "./track.wrapper";
+import { sendRequest } from "@/utils/api";
+import { AccountCircle } from "@mui/icons-material";
 const WaveTrack = () => {
 
     const { currentTrack, setCurrentTrack } = useTrackContext() as ITrackContext
@@ -21,29 +23,31 @@ const WaveTrack = () => {
 
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-    const arrComments = [
-        {
-            id: 1,
-            avatar: "http://localhost:8000/images/chill1.png",
-            moment: 10,
-            user: "username 1",
-            content: "just a comment1"
-        },
-        {
-            id: 2,
-            avatar: "http://localhost:8000/images/chill1.png",
-            moment: 30,
-            user: "username 2",
-            content: "just a comment3"
-        },
-        {
-            id: 3,
-            avatar: "http://localhost:8000/images/chill1.png",
-            moment: 50,
-            user: "username 3",
-            content: "just a comment3"
-        },
-    ]
+    const [arrComments, setArrComments] = useState<IComment[]>(
+        []
+    )
+
+    const loadDataComment = async () => {
+        console.log("check id alfter post: ", currentTrack._id)
+        const res = await sendRequest<IBackendRes<IComment[]>>({
+            url: `http://localhost:8000/api/v1/tracks/comments`,
+            method: "POST",
+            queryParams: {
+                current: 1,
+                pageSize: 10,
+                // trackId: currentTrack._id,
+                trackId: '66cd5a7aa0a34239beb977c7',
+                sort: "-createdAt"
+            }
+        })
+        //@ts-ignore
+        setArrComments(res?.data?.result as IComment)
+    }
+
+    useEffect(() => {
+        loadDataComment();
+    }, [])
+
 
     const calLeft = (moment: number) => {
         const hardCodeDuration = 199;
@@ -205,7 +209,7 @@ const WaveTrack = () => {
                                 top: 2,
                                 zIndex: 20
                             }}>
-                                {
+                                {arrComments &&
                                     arrComments.map((cmt, id) => {
                                         return (
                                             <Tooltip key={id} title={cmt.content} arrow>
@@ -214,12 +218,12 @@ const WaveTrack = () => {
                                                         const hover = hoverRef.current!;
                                                         hover.style.width = calLeft(cmt.moment + 3)
                                                     }}
-                                                    key={cmt.id} style={{
+                                                    key={cmt._id} style={{
                                                         width: 20,
                                                         height: 20,
                                                         position: 'absolute',
                                                         left: calLeft(cmt.moment),
-                                                    }} src={cmt.avatar} alt="img of comments" />
+                                                    }} src={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrj8pIhVdurmDWMhrIQWRzeDMWFWwIAMot7Q&s'} alt="img of comments" />
                                             </Tooltip>
 
 
@@ -238,7 +242,39 @@ const WaveTrack = () => {
                     </div>
                 </div>
             </div>
+            <div style={{
+                width: '100%',
+                margin: '30px 30px',
+                alignItems: 'center',
+            }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField sx={{
+                            width: '100%'
+                        }} id="standard-basic" label="Add a comment" variant="standard" />
+                    </Grid>
+                    <Grid item xs={12}>
+                        {arrComments &&
+                            arrComments.map(track => (
+                                <div
+                                    key={track._id}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 20,
+                                        margin: '20px 20px'
+                                    }}
+                                >
+                                    <AccountCircle />
+                                    {track.content}
+                                </div>
+                            ))
+                        }
+                    </Grid>
+                </Grid>
+            </div>
         </div >
+
     )
 }
 

@@ -58,4 +58,24 @@ declare global {
         currentTrack: IShareTrack,
         setCurrentTrack: Function
     }
+
+    interface IUser {
+        _id: string;
+        email: string;
+        name: string;
+        role: string;
+        type: string;
+    }
+
+    interface IComment {
+        _id: string;
+        content: string;
+        moment: number;
+        user: User;
+        track: string;
+        isDeleted: boolean;
+        __v: number;
+        createdAt: string;
+        updatedAt: string;
+    }
 }

@@ -9,6 +9,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Divider from '@mui/material/Divider';
 import Link from "next/link";
+import { useTrackContext } from "../track/track.wrapper";
 
 interface IProps {
     data: ITrackTop[],
@@ -16,6 +17,9 @@ interface IProps {
 }
 
 const MainSlider = (props: IProps) => {
+
+    const { currentTrack, setCurrentTrack } = useTrackContext() as ITrackContext
+
     const NextArrow = (props: any) => {
         return (
             <Button variant="outlined" color="inherit"
@@ -65,6 +69,27 @@ const MainSlider = (props: IProps) => {
         centerMode: true,
     };
     //box === div
+
+    const handlePlayTrack = (item: ITrackTop) => {
+        console.log("check track: ", item)
+        setCurrentTrack({
+            "_id": item._id,
+            "title": item.title,
+            "description": item.description,
+            "category": item.category,
+            "imgUrl": item.imgUrl,
+            "trackUrl": item.trackUrl,
+            "countLike": item.countLike,
+            "countPlay": item.countPlay,
+            "uploader": item.uploader,
+            "isDeleted": false,
+            "createdAt": item.createdAt,
+            "updatedAt": item.updatedAt,
+            "isPlaying": true
+        })
+
+        console.log("check curretn track: ", currentTrack)
+    }
     return (
 
 
@@ -94,14 +119,16 @@ const MainSlider = (props: IProps) => {
                     return (
                         <div className="track" key={track._id}>
                             <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/images/${track.imgUrl}`} />
-                            <Link style={{ textDecoration: 'unset', color: 'unset' }} href={`/track/${track._id}?audio=${track.trackUrl}`}><h4>{track.title}</h4></Link>
+                            <Link onClick={() => {
+                                handlePlayTrack(track);
+                            }} style={{ textDecoration: 'unset', color: 'unset' }} href={`/track/${track._id}?audio=${track.trackUrl}`}><h4>{track.title}</h4></Link>
                             <h5>{track.description}</h5>
                         </div>
                     )
                 })}
             </Slider>
             <Divider />
-        </Box>
+        </Box >
     );
 }
 
